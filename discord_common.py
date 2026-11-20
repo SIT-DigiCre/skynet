@@ -14,7 +14,7 @@ def load_active_members(path: str) -> list[int]:
 
 def create_client() -> discord.Client:
     intents = discord.Intents.default()
-    intents.message_content = True
+    # intents.message_content = True
     intents.members = True
     return discord.Client(intents=intents)
 

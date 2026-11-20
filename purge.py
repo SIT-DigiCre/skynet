@@ -1,35 +1,18 @@
 import discord
 
 from config import Settings
+from discord_common import create_client, find_guild, load_active_members
 from messages import Messages
 
 
-def load_active_members(path: str) -> list[int]:
-    active_members = []
-    with open(path, "r", encoding="utf-8") as f:
-        for line in f:
-            line = line.strip()
-            if not line:
-                continue
-            active_members.append(int(line))
-    return active_members
-
-
-def create_client(settings: Settings, messages: Messages) -> discord.Client:
-    intents = discord.Intents.default()
-    intents.message_content = True
-    intents.members = True
-    client = discord.Client(intents=intents)
+def create_purge_client(settings: Settings, messages: Messages) -> discord.Client:
+    client = create_client()
     active_members = load_active_members(settings.active_members_file)
 
     @client.event
     async def on_ready():
         delete_members = []
-        target_guild: discord.Guild = None
-        for guild in client.guilds:
-            if guild.name == settings.guild_name:
-                target_guild = guild
-                break
+        target_guild = find_guild(client, settings.guild_name)
         async for member in target_guild.fetch_members():
             # print(member.name)
             # 既存部員のリストに居ないかつ、OBOGじゃないかつ、Botじゃない人を削除対象者に追加
@@ -68,5 +51,5 @@ def create_client(settings: Settings, messages: Messages) -> discord.Client:
 
 
 def run(settings: Settings, messages: Messages) -> None:
-    client = create_client(settings, messages)
+    client = create_purge_client(settings, messages)
     client.run(settings.token)

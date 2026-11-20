@@ -49,20 +49,23 @@ def create_dm_client(
 
     @client.event
     async def on_ready():
-        members = await resolve_targets(client, settings, target)
-        for member in members:
-            print(f"{member.id}#{member.display_name}")
-        print(f"送信対象者数: {len(members)}")
-        key = input("送信しますか？(y/n)")
-        if key == "y":
+        try:
+            members = await resolve_targets(client, settings, target)
             for member in members:
-                try:
-                    await member.send(message)
-                    print(f"DMを送信しました: {member.id}#{member.display_name}")
-                except discord.Forbidden:
-                    print(f"DM送信不可: {member.id}#{member.display_name}")
-                except Exception as e:
-                    print(f"DM送信エラー: {member.id} - {e}")
+                print(f"{member.id}#{member.display_name}")
+            print(f"送信対象者数: {len(members)}")
+            key = input("送信しますか？(y/n)")
+            if key == "y":
+                for member in members:
+                    try:
+                        await member.send(message)
+                        print(f"DMを送信しました: {member.id}#{member.display_name}")
+                    except discord.Forbidden:
+                        print(f"DM送信不可: {member.id}#{member.display_name}")
+                    except Exception as e:
+                        print(f"DM送信エラー: {member.id} - {e}")
+        finally:
+            await client.close()
 
     return client
 

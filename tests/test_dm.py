@@ -2,6 +2,7 @@ import asyncio
 
 import pytest
 
+import discord_common
 import dm
 
 
@@ -61,21 +62,21 @@ def test_resolve_targets_purge_list(tmp_path):
         FakeMember(3),  # 対象
     ]
     settings, client = make_env(tmp_path, [1], members)
-    result = asyncio.run(dm.resolve_targets(client, settings, "purge-list"))
+    result = asyncio.run(discord_common.resolve_targets(client, settings, "purge-list"))
     assert [m.id for m in result] == [3]
 
 
 def test_resolve_targets_all_excludes_only_bot(tmp_path):
     members = [FakeMember(1), FakeMember(2, [BOT]), FakeMember(3)]
     settings, client = make_env(tmp_path, [1], members)
-    result = asyncio.run(dm.resolve_targets(client, settings, "all"))
+    result = asyncio.run(discord_common.resolve_targets(client, settings, "all"))
     assert [m.id for m in result] == [1, 3]
 
 
 def test_resolve_targets_active_only(tmp_path):
     members = [FakeMember(1), FakeMember(2, [BOT]), FakeMember(3)]
     settings, client = make_env(tmp_path, [1, 2], members)
-    result = asyncio.run(dm.resolve_targets(client, settings, "active"))
+    result = asyncio.run(discord_common.resolve_targets(client, settings, "active"))
     assert [m.id for m in result] == [1, 2]
 
 

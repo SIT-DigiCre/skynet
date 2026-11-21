@@ -32,6 +32,9 @@ python -m venv .venv
 
 # DM 一斉送信モード（kick はしない）
 .\.venv\Scripts\python.exe member-manager.py dm --message-file notes.txt --target all
+
+# list モード: 対象ユーザーの一覧表示（DM送信も削除もしない）
+.\.venv\Scripts\python.exe member-manager.py list --target purge-list
 ```
 
 引数で指定しなかった項目は対話で聞かれます。
@@ -52,6 +55,10 @@ DM 文面は OBOG ロールの有無で切り替えます（`messages/default_dm
 | `all` | ギルドの全メンバーから Bot 以外 |
 | `active` | 現役部員のみ（`ACTIVE_MEMBERS_FILE` の ID） |
 
+### list モード（一覧表示）
+
+`--target` に同じ 3 種類の対象を指定でき、条件に該当するメンバーを `ユーザーID#表示名` で1行ずつ、最後に `対象者数: N` を表示して終了します。DM の送信も kick も行わず、確認プロンプトもありません。dm モードの送信前に、対象が合っているかを確認するのに使えます。
+
 ## テスト
 
 ```powershell
@@ -68,8 +75,8 @@ member-manager.py    エントリポイント（モードに応じて振り分�
 cli.py               引数解析と対話フォールバック
 config.py            .env の読み込みと検証
 purge.py             粛正フロー（判定・DM・kick）
-dm.py                DM 一斉送信フロー
-discord_common.py    ギルド検索・部員リスト読込などの共通処理
+dm.py                DM 一斉送信フロー・一覧表示フロー
+discord_common.py    ギルド検索・部員リスト読込・対象解決などの共通処理
 messages.py          messages/ 配下の文面ファイル読み込み
 messages/            DM 文面・kick 理由（UTF-8 テキスト）
 tests/               pytest テスト

@@ -50,6 +50,35 @@ def test_parse_partial_args_only_prompts_missing(monkeypatch):
     assert args.message_file == "notes.txt"
 
 
+def test_parse_list_full_args_no_prompts(monkeypatch):
+    monkeypatch.setattr(
+        "builtins.input",
+        lambda *a: pytest.fail("プロンプトを表示しない"),
+    )
+    args = cli.parse(["list", "--target", "purge-list"])
+    assert args.mode == "list"
+    assert args.target == "purge-list"
+    assert args.message_file is None
+
+
+def test_parse_list_prompts_only_for_target(monkeypatch):
+    # list モードはメッセージファイルを聞かない
+    answers = iter(["2"])
+    monkeypatch.setattr("builtins.input", lambda *a: next(answers))
+    args = cli.parse(["list"])
+    assert args.mode == "list"
+    assert args.target == "all"
+    assert args.message_file is None
+
+
+def test_parse_interactive_list_mode(monkeypatch):
+    answers = iter(["3", "1"])
+    monkeypatch.setattr("builtins.input", lambda *a: next(answers))
+    args = cli.parse([])
+    assert args.mode == "list"
+    assert args.target == "purge-list"
+
+
 def test_parse_invalid_mode_name(monkeypatch):
     answers = iter(["9"])
     monkeypatch.setattr("builtins.input", lambda *a: next(answers))
